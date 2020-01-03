@@ -1,0 +1,37 @@
+- hosts: all
+  become: yes
+  tasks:
+  - name: "Install Debian Updates"
+    apt:
+      upgrade: dist
+  - name: "Reboot for latest Kernel"
+    reboot:
+  - name: "Install Prereqs"
+    apt:
+      name:
+        - ca-certificates
+        - apt-transport-https
+      state: latest
+  - name: "Add Unifi Key"
+    apt_key:
+      url: https://dl.ui.com/unifi/unifi-repo.gpg
+      state: present
+  - name: "Add Mongo Key"
+    apt_key:
+      keyserver: keyserver.ubuntu.com
+      id: 0C49F3730359A14518585931BC711F9BA15703C6
+  - name: "Add Unifi Repo"
+    apt_repository:
+      repo: deb https://www.ui.com/downloads/unifi/debian stable ubiquiti
+      state: present
+      filename: unifi
+  - name: "Add Mongo Repo"
+    apt_repository:
+      repo: deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse
+      state: present
+      filename: mongo-org-3.4
+  - name: "Install Unifi"
+    apt:
+      name: unifi
+      update_cache: yes
+      state: latest
